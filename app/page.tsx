@@ -92,7 +92,7 @@ async function callGroq(row: Row): Promise<{ decision: Decision; reason: string 
     const t = line.trim();
     if (t.toUpperCase().startsWith('DECISION:')) {
       const raw = t.split(':', 2)[1].trim().toUpperCase();
-      decision = (['KEEP', 'DROP', 'REVIEW'] as const).includes(raw as Decision)
+      decision = (['KEEP', 'DROP', 'REVIEW'] as string[]).includes(raw)
         ? (raw as Decision)
         : 'REVIEW';
     } else if (t.toUpperCase().startsWith('REASON:')) {

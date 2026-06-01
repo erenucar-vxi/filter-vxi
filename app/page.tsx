@@ -14,33 +14,6 @@ type Phase = 'idle' | 'running' | 'paused' | 'done' | 'stopped';
 
 const FIELDS = ['First Name', 'Last Name', 'Company Name', 'Job Title', 'Seniority', 'Job Function'];
 const DELAY_MS = 2150;
-const MODEL = 'llama-3.3-70b-versatile';
-const API_KEY = process.env.NEXT_PUBLIC_GROQ_API_KEY ?? '';
-
-const SYSTEM_PROMPT = `You are a sales-ops analyst at VXI Global Solutions, a BPO that sells outsourced customer experience and contact center services. Buyers own or influence decisions about customer support, customer experience, contact centers, vendor management, or operations.
-
-For each contact, output exactly two lines and nothing else:
-DECISION: KEEP | DROP | REVIEW
-REASON: <one short phrase under 12 words>
-
-KEEP if all true:
-1. Seniority is Director, VP, SVP, EVP, C-level, Chief, Head of, or President
-2. Title or function shows ownership of CX, customer care, customer service, customer support, contact center, call center, support operations, CX strategy, vendor management, BPO procurement, or operations leadership with CX in scope
-3. Company is a real operating company (not staffing/recruiting/BPO competitor)
-
-DROP if any true:
-- Seniority is Manager, Senior Manager, Lead, Analyst, Coordinator, Specialist, IC, or unspecified
-- Function is engineering, software, IT, data science, security, product, design, marketing (unless CX-marketing), sales (unless CX-sales), legal, HR, unrelated finance, R&D, or clinical
-- Company is a BPO competitor: Teleperformance, Concentrix, TTEC, Alorica, Sitel, Foundever, Sutherland, Conduent, Genpact, iQor, Webhelp, Majorel, ResultsCX
-- Company is a recruiting/staffing/consultancy
-
-REVIEW if:
-- Title is Director/VP of Procurement or Vendor Management
-- Title is vague (Director of Operations with no clarifier)
-- Title and function fields conflict
-- Seniority is high but role fit ambiguous
-
-Tie-breaker: when in doubt, DROP.`;
 
 const BADGE: Record<Decision, string> = {
   KEEP:   'bg-green-950 text-green-400 border border-green-900/50',
@@ -59,21 +32,10 @@ async function callGroq(row: Row): Promise<{ decision: Decision; reason: string 
     .map(f => `${f}: ${row[f]}`)
     .join('\n');
 
-  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+  const res = await fetch('/api/groq', {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 80,
-      temperature: 0.1,
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: `Contact:\n${contactText}\n\nDecide:` },
-      ],
-    }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contactText }),
   });
 
   if (!res.ok) {
@@ -259,14 +221,6 @@ export default function Home() {
             <span className="text-yellow-400 font-medium">REVIEW</span> — with a reason.
           </p>
         </header>
-
-        {/* API key missing warning */}
-        {!API_KEY && (
-          <div className="mb-4 px-4 py-3 bg-red-950 border border-red-800 rounded-xl text-red-300 text-sm">
-            <strong>GROQ_API_KEY is not configured.</strong> Add it as a GitHub Secret named{' '}
-            <code className="font-mono bg-red-900/50 px-1 rounded">GROQ_API_KEY</code> and redeploy.
-          </div>
-        )}
 
         {/* Upload */}
         <section className="bg-gray-900 border border-gray-800 rounded-2xl p-6 mb-4">

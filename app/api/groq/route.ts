@@ -1,5 +1,3 @@
-export const runtime = 'edge';
-
 const MODEL = 'llama-3.3-70b-versatile';
 
 const SYSTEM_PROMPT = `You are a sales-ops analyst at VXI Global Solutions, a BPO that sells outsourced customer experience and contact center services. Buyers own or influence decisions about customer support, customer experience, contact centers, vendor management, or operations.

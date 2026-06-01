@@ -179,7 +179,7 @@
     </div>
     <div class="overflow-x-auto">
       <table class="w-full">
-        <thead>
+        <thead class="sticky top-0 bg-gray-900 z-10">
           <tr class="text-left border-b border-gray-800">
             <th class="pb-2.5 pr-4 text-xs text-gray-600 font-medium">Name</th>
             <th class="pb-2.5 pr-4 text-xs text-gray-600 font-medium">Company</th>
@@ -188,8 +188,12 @@
             <th class="pb-2.5 text-xs text-gray-600 font-medium">Reason</th>
           </tr>
         </thead>
-        <tbody id="resultsBody"></tbody>
       </table>
+      <div class="overflow-y-auto" style="max-height:420px">
+        <table class="w-full">
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
     </div>
     <p id="noResultsMsg" class="hidden text-center text-gray-600 text-sm py-8">No results match the filter.</p>
   </section>
